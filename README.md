@@ -127,12 +127,17 @@ python3 edge/score_csv.py \
 
 ## Edge Demo (2 Terminals)
 
-There are **two ways** to run the live demo:
+This repo supports **two distinct demo modes**:
 
-- **Dev mode (recommended):** uses the `sensad` CLI inside your project venv.
-- **Edge mode:** uses only scripts in `edge/` (no `sensad` install), but still requires Python deps (`numpy`, `pandas`).
+- **Dev mode (recommended):** uses the `sensad` CLI (requires the project venv `.venv`).
+- **Edge mode:** uses only scripts in `edge/` (no `sensad`), but still needs Python deps (`numpy`, `pandas`) in `edge_venv`.
 
-### A) Dev mode (project venv)
+The key rule is simple:
+
+- If you see `sensad ...` → you must be in **`.venv`**.
+- If you are in **`edge_venv`** → do **not** use `sensad` at all; use `python3 edge/...` only.
+
+### A) Dev mode (project venv: `.venv`)
 
 **Terminal A — stream sensor rows**
 ```bash
@@ -144,17 +149,16 @@ sensad train --data data/demo/train.csv --out runs/demo --model baseline
 sensad stream --input data/demo/test.csv --rate 5
 ```
 
-**Terminal B — score stream**
+**Terminal B — score stream (same venv)**
 ```bash
 source .venv/bin/activate
 sensad stream --input data/demo/test.csv --rate 5 | \
   python3 edge/score_stream.py --baseline runs/demo/baseline.json --only-anomalies
 ```
 
-### B) Edge mode (scripts only)
+### B) Edge mode (scripts only: `edge_venv`, no `sensad`)
 
-This mode does **not** require installing the package (`sensad`), but you still need Python deps:
-
+Create a small venv for the edge scripts:
 ```bash
 python3 -m venv edge_venv
 source edge_venv/bin/activate
@@ -200,6 +204,13 @@ make setup
 make synth
 make train
 make eval
+```
+
+Edge demos:
+```bash
+make edge-venv
+make edge-demo-edge
+make edge-demo-dev
 ```
 
 ---

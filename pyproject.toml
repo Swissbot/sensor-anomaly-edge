@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sensor-anomaly-edge"
+version = "0.1.0"
+description = "Time-series anomaly detection for sensors with edge-ready inference"
+requires-python = ">=3.12"
+
+[project.scripts]
+sensad = "sensad.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

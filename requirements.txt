@@ -1,0 +1,11 @@
+typer>=0.12
+rich>=13.7
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.5
+matplotlib>=3.8
+tqdm>=4.66
+# ML model (optional but included for the AE path)
+torch>=2.2
+# Optional export runtime:
+onnxruntime>=1.17

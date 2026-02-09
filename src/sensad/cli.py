@@ -8,6 +8,7 @@ from .train import train_main
 from .eval import eval_main
 from .export import export_main
 from .infer import infer_main
+from .stream import stream_main
 
 app = typer.Typer(add_completion=False)
 console = Console()
@@ -52,6 +53,18 @@ def infer(
     agg: str = typer.Option("", "--agg", help="Override aggregation: max|mean (empty keeps trained)"),
 ):
     infer_main(model_path=model, input_csv=input, out_csv=out, threshold=threshold, agg=agg)
+
+@app.command()
+def stream(
+    input: str = typer.Option(..., "--input", help="CSV to stream line-by-line"),
+    rate: float = typer.Option(1.0, "--rate", help="Rows per second (Hz)"),
+    loop: bool = typer.Option(False, "--loop", help="Loop forever"),
+    no_header: bool = typer.Option(False, "--no-header", help="Do not emit CSV header"),
+):
+    """
+    Stream a CSV as if it was a live sensor feed (stdout).
+    """
+    stream_main(input_csv=input, rate_hz=rate, loop=loop, no_header=no_header)
 
 def main():
     app()

@@ -21,16 +21,23 @@ def _load_baseline(path: Path) -> BaselineModel:
         agg=cfg.get("agg", "max"),
     )
 
-def infer_main(model_path: str, input_csv: str):
+def infer_main(model_path: str, input_csv: str, out_csv: str = "", threshold: float = -1.0, agg: str = ""):
     mp = Path(model_path)
     if mp.is_dir():
-        # allow passing run folder
         mp = mp / "baseline.json"
 
     if mp.suffix.lower() != ".json":
         raise ValueError("For baseline inference, provide baseline.json or a run folder containing it.")
 
     model = _load_baseline(mp)
+
+    # overrides
+    if threshold is not None and threshold >= 0:
+        model.threshold = float(threshold)
+    if agg:
+        if agg not in ("max", "mean"):
+            raise ValueError("--agg must be 'max' or 'mean'")
+        model.agg = agg
 
     df = pd.read_csv(input_csv)
     cols = [c for c in df.columns if c in model.columns]
@@ -44,7 +51,12 @@ def infer_main(model_path: str, input_csv: str):
     out["anomaly_score"] = score
     out["is_anomaly"] = pred
 
-    out_path = mp.parent / "predictions.csv"
+    if out_csv:
+        out_path = Path(out_csv)
+    else:
+        out_path = mp.parent / "predictions.csv"
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(out_path, index=False)
 
     # show top anomalies
@@ -60,4 +72,4 @@ def infer_main(model_path: str, input_csv: str):
         t.add_row(str(k), tm, f"{score[int(i)]:.3f}", str(int(pred[int(i)])))
     console.print(t)
 
-    console.print(f"[green]OK[/green] wrote {out_path}")
+    console.print(f"[green]OK[/green] wrote {out_path} | threshold={model.threshold:.3f} agg={model.agg}")

@@ -45,10 +45,13 @@ def export(
 
 @app.command()
 def infer(
-    model: str = typer.Option(..., "--model", help="Model path (.pt/.onnx)"),
+    model: str = typer.Option(..., "--model", help="baseline.json OR run folder containing it"),
     input: str = typer.Option(..., "--input", help="CSV file to score"),
+    out: str = typer.Option("", "--out", help="Output CSV (default: <run>/predictions.csv)"),
+    threshold: float = typer.Option(-1.0, "--threshold", help="Override threshold (use -1 to keep trained)"),
+    agg: str = typer.Option("", "--agg", help="Override aggregation: max|mean (empty keeps trained)"),
 ):
-    infer_main(model_path=model, input_csv=input)
+    infer_main(model_path=model, input_csv=input, out_csv=out, threshold=threshold, agg=agg)
 
 def main():
     app()
